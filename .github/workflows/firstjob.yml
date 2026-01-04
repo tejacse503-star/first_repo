@@ -1,5 +1,5 @@
 name: myfirst job
-on: workfolow_dispatch
+on: workfolow-dispatch
 jobs:
   first-job:
   runs-on: ubuntu-latest
