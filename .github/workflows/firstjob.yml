@@ -1,0 +1,12 @@
+name: myfirst job
+on: workfolow_dispatch
+jobs:
+  first-job:
+  runs-on: ubuntu-latest
+  steps: 
+    - name: print message"
+      run: echo "Hello Shreyan"
+
+    - name: "print second message"
+      run: echo "Hello Yashika"
+    
