@@ -3,10 +3,10 @@ on: workflow_dispatch
 jobs:
   first-job:
     runs-on: ubuntu-latest
-  steps: 
-    - name: print message
-      run: echo "Hello Shreyan"
+    steps: 
+      - name: print message
+        run: echo "Hello Shreyan"
 
-    - name: print second message
-      run: echo "Hello Yashika"
+      - name: print second message
+        run: echo "Hello Yashika"
     
