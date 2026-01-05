@@ -11,6 +11,10 @@ on:
         description: "Run deployment job?"
         required: true
         default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
 
 env:
   APP_NAME: demo-app
@@ -34,10 +38,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      
-
       - name: Create test artifact
-        run: echo "Test completed on Node ${{ matrix.node-version }}" > test-result.txt
+        run: |
+          echo "Test completed on Node ${{ matrix.node-version }}" > test-result.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -50,7 +53,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
-    if: ${{ github.event.inputs.run_deploy == 'true' }}
+    # Prevents failure when workflow is triggered by push / PR
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_deploy == 'true' }}
 
     environment:
       name: production
