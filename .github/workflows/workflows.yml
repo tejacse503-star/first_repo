@@ -1,0 +1,79 @@
+name: GH-200 Complete Demo Workflow
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      run_deploy:
+        description: "Run deployment job?"
+        required: true
+        default: "false"
+
+env:
+  APP_NAME: demo-app
+
+jobs:
+
+  build-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Create test artifact
+        run: echo "Test completed on Node ${{ matrix.node-version }}" > test-result.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: test-result.txt
+
+  deploy:
+    name: Deploy to Environment
+    needs: build-test
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.inputs.run_deploy == 'true' }}
+
+    environment:
+      name: production
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Deploy step
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          echo "Deploying $APP_NAME"
+          echo "Using secret token (masked)"
