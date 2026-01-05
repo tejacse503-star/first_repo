@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Prevents failure when workflow is triggered by push / PR
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_deploy == 'true' }}
+    if: ${{ github.event_name == 'push' || github.event.inputs.run_deploy == 'true' }}
 
     environment:
       name: production
